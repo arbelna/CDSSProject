@@ -1,0 +1,7 @@
+,id,name,units,source,good_before,good_after,name2
+0,718-7,Hemoglobin [Mass/volume] in Blood,g/dL,Lonic,"0,3,0","0,3,0",Hemoglobin Level
+1,53286-1,WBC casts [#/volume] in Urine by Computer assisted method,cells/µL,Lonic,"0,3,0","0,3,0",WBC Count
+2,386661006,Fever,Celsius,SNOMED,"0,3,0","0,3,0",Fever
+3,43724002,Chills,,SNOMED,"0,3,0","0,3,0",Chills
+4,243865006,Allergic disorder monitoring status,,SNOMED,"0,3,0","0,3,0",Allergic State Assessment
+5,185823004,Finding of skin texture,,SNOMED,"0,3,0","0,3,0",Skin Examination
