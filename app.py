@@ -335,14 +335,29 @@ elif function_choice == "Get State Intervals":
     def plot_state_intervals(intervals, patient_id, state_choice):
         fig = go.Figure()
         states = list(intervals.keys())
-        num_states = len(states)
+
+        # Define correct sorting orders for each state type
+        sorting_orders = {
+            "Hemoglobin State": ["Severe_Anemia", "Moderate_Anemia", "Mild_Anemia", "Normal_Hemoglobin",
+                                 "Polycythemia"],
+            "Hematological State": ["Pancytopenia", "Leukopenia", "Anemia", "Suspected_Leukemia",
+                                    "Normal_Hematological", "Leukemoid_Reaction", "Suspected_Polycythemia_Vera",
+                                    "Polyhemia"],
+            "Systemic Toxicity": ["Grade_IV", "Grade_III", "Grade_II", "Grade_I"]  # Reversed order as requested
+        }
+
+        # Sort the states based on the custom order
+        sorted_states = sorted(states, key=lambda x: sorting_orders[state_choice].index(x) if x in sorting_orders[
+            state_choice] else len(sorting_orders[state_choice]))
+        num_states = len(sorted_states)
 
         # Generate random colors for each state
         colors = {state: f'rgb({random.randint(0, 255)}, {random.randint(0, 255)}, {random.randint(0, 255)})' for state
-                  in states}
+                  in sorted_states}
 
-        for i, (state, time_ranges) in enumerate(intervals.items()):
-            # Calculate the y-position for each state
+        for i, state in enumerate(sorted_states):
+            time_ranges = intervals[state]
+            # Calculate the y-position for each state (first state at the top)
             y_position = 1 - (i + 0.5) / num_states
 
             for start, end in time_ranges:
@@ -364,7 +379,7 @@ elif function_choice == "Get State Intervals":
                 title="States",
                 tickmode='array',
                 tickvals=[1 - (i + 0.5) / num_states for i in range(num_states)],
-                ticktext=[state.replace('_', ' ') for state in states],
+                ticktext=[state.replace('_', ' ') for state in sorted_states],
                 range=[-0.1, 1.1]  # Extend the range slightly to show full lines
             ),
             height=400,
