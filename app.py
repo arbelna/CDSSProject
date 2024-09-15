@@ -4,16 +4,16 @@ from datetime import datetime, time
 from DssEngine import DSSEngine
 import plotly.graph_objects as go
 import random
-from zoneinfo import ZoneInfo
+import pytz
 
 # Get current UTC time
 utc_time = datetime.utcnow()
 
 # Define your local timezone (example: 'Asia/Jerusalem')
-local_tz = ZoneInfo('Asia/Jerusalem')
+local_tz = pytz.timezone('Asia/Jerusalem')
 
 # Convert UTC time to local time
-local_time = utc_time.replace(tzinfo=ZoneInfo('UTC')).astimezone(local_tz)
+local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(local_tz)
 
 
 # Load data
