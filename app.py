@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, time
-
 from altair import value
-
 from DssEngine import DSSEngine
 import plotly.graph_objects as go
 import random
@@ -11,10 +9,11 @@ import pytz
 
 
 # Load data
-patients_df = pd.read_csv('patients.csv')
-observations_df = pd.read_csv('patient_data.csv', na_values=["NA", "N/A", ""], keep_default_na=False)
-loinc_data = pd.read_csv('loinc_data.csv')
 dss = DSSEngine()
+patients_df = dss.db_con.patients_personal_data      #pd.read_csv('patients.csv')
+observations_df = dss.db_con.patients_medical_data   #pd.read_csv('patient_data.csv', na_values=["NA", "N/A", ""], keep_default_na=False)
+loinc_data = dss.db_con.loinc_data                   #pd.read_csv('loinc_data.csv')
+
 timezone = pytz.timezone('Asia/Jerusalem')
 
 
@@ -324,10 +323,10 @@ elif function_choice == "Get Patients States":
                         st.subheader(f":green[Patient {patient_id}]", anchor=False)
                     elif treatment_header in ["M_II", "F_II", "M_III", "F_III"]:
                         st.subheader(f":orange[Patient {patient_id}]", anchor=False)
-                        st.warning(f'Call the family!', icon="⚠️")
                     elif treatment_header in ["M_IV", "F_IV", "M_V", "F_V"]:
                         st.subheader(f":red[Patient {patient_id}]", anchor=False)
-                        st.warning(f'Call the family!', icon="⚠️")
+                        if treatment_header in ["M_V", "F_V"]:
+                            st.warning(f'Call the family!', icon="⚠️")
 
                     else:
                         patient_data["Treatment"] = treatment_full
