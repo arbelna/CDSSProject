@@ -6,18 +6,19 @@ import plotly.graph_objects as go
 import random
 from streamlit_javascript import st_javascript
 
+timezone = st_javascript("""
+    await (async () => {
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        return userTimezone;
+    })().then(returnValue => returnValue)
+""")
+
+
 # Load data
 dss = DSSEngine()
 patients_df = dss.db_con.patients_personal_data      #pd.read_csv('patients.csv')
 observations_df = dss.db_con.patients_medical_data   #pd.read_csv('patient_data.csv', na_values=["NA", "N/A", ""], keep_default_na=False)
 loinc_data = dss.db_con.loinc_data                   #pd.read_csv('loinc_data.csv')
-
-timezone = st_javascript("""await (async () => {
-            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log(userTimezone)
-            return userTimezone
-})().then(returnValue => returnValue)""")
-
 
 st.markdown("""
 <style>
