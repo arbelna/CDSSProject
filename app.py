@@ -6,21 +6,15 @@ import plotly.graph_objects as go
 import random
 import pytz
 
-# Get current UTC time
-utc_time = datetime.utcnow()
-
-# Define your local timezone (example: 'Asia/Jerusalem')
-local_tz = pytz.timezone('Asia/Jerusalem')
-
-# Convert UTC time to local time
-local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(local_tz)
-
 
 # Load data
 dss = DSSEngine()
-patients_df = dss.db_con.patients_personal_data      #pd.read_csv('patients.csv')
-observations_df = dss.db_con.patients_medical_data   #pd.read_csv('patient_data.csv', na_values=["NA", "N/A", ""], keep_default_na=False)
-loinc_data = dss.db_con.loinc_data                   #pd.read_csv('loinc_data.csv')
+patients_df = dss.db_con.patients_personal_data    #pd.read_csv('patients.csv')
+observations_df = dss.db_con.patients_medical_data #pd.read_csv('patient_data.csv', na_values=["NA", "N/A", ""], keep_default_na=False)
+loinc_data = dss.db_con.loinc_data     #pd.read_csv('loinc_data.csv')
+
+local_tz = pytz.timezone('Asia/Jerusalem')
+
 
 st.markdown("""
 <style>
@@ -110,13 +104,16 @@ if function_choice == "Get Test Value":
         else:
             test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
             test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
-    value_date = st.date_input('Value Date').strftime("%d.%m.%Y")
+    default_date = datetime.now(local_tz).date()
+    value_date = st.date_input('Value Date', value=default_date).strftime("%d.%m.%Y")
     value_time = st.time_input('Value Time', value=None)
     if value_time:
         value_time = value_time.strftime("%H:%M")
 
-    query_date = st.date_input('Query Date').strftime("%d.%m.%Y")
-    query_time = st.time_input('Query Time', value='now')
+    default_date = datetime.now(local_tz).date()
+    query_date = st.date_input('Query Date', value=default_date).strftime("%d.%m.%Y")
+    default_time = datetime.now(local_tz).time()
+    query_time = st.time_input('Query Time', value=default_time)
     if query_time:
         query_time = query_time.strftime("%H:%M")
 
@@ -159,12 +156,13 @@ elif function_choice == "Get Test History":
         else:
             test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
             test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
-    start_date = st.date_input('Start Date').strftime("%d.%m.%Y")
+    default_date = datetime.now(local_tz).date()
+    start_date = st.date_input('Start Date', value=default_date).strftime("%d.%m.%Y")
     start_time = st.time_input('Start Time', value=None)
     if start_time:
         start_time = start_time.strftime("%H:%M")
 
-    end_date = st.date_input('End Date').strftime("%d.%m.%Y")
+    end_date = st.date_input('End Date', value=default_date).strftime("%d.%m.%Y")
     end_time = st.time_input('End Time', value=None)
     if end_time:
         end_time = end_time.strftime("%H:%M")
@@ -207,13 +205,15 @@ elif function_choice == "Update Test Value":
         else:
             test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
             test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
-    measure_date = st.date_input('Measurement Date').strftime("%d.%m.%Y")
+    default_date = datetime.now(local_tz).date()
+    measure_date = st.date_input('Measurement Date', value=default_date).strftime("%d.%m.%Y")
     measure_time = st.time_input('Measurement Time', value=None)
     if measure_time:
         measure_time = measure_time.strftime("%H:%M")
 
-    update_date = st.date_input('Update Date').strftime("%d.%m.%Y")
-    update_time = st.time_input('Update Time', value='now')
+    update_date = st.date_input('Update Date', value=default_date).strftime("%d.%m.%Y")
+    default_time = datetime.now(local_tz).time()
+    update_time = st.time_input('Update Time', value=default_time)
     if update_time:
         update_time = update_time.strftime("%H:%M")
 
@@ -226,7 +226,6 @@ elif function_choice == "Update Test Value":
             st.table(result)
         else:
             st.write(result)
-    st.cache_data.clear()
 
 elif function_choice == "Delete Test Value":
     st.header("Delete Test Value")
@@ -255,7 +254,8 @@ elif function_choice == "Delete Test Value":
         else:
             test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
             test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
-    measure_date = st.date_input('Measurement Date').strftime("%d.%m.%Y")
+    default_date = datetime.now(local_tz).date()
+    measure_date = st.date_input('Measurement Date', value=default_date).strftime("%d.%m.%Y")
     measure_time = st.time_input('Measurement Time', value=None)
     if measure_time:
         measure_time = measure_time.strftime("%H:%M")
@@ -266,12 +266,12 @@ elif function_choice == "Delete Test Value":
             st.table(result)
         else:
             st.write(result)
-    st.cache_data.clear()
 
 elif function_choice == "Get Patients States":
     st.header("Get Patients States")
 
-    state_date = st.date_input('Date')
+    default_date = datetime.now(local_tz).date()
+    state_date = st.date_input('Date', value=default_date)
     state_time = st.time_input('Time', time(0, 0))
     state_datetime = datetime.combine(state_date, state_time)
 

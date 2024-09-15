@@ -1,6 +1,8 @@
 import pandas as pd
 import os
 from datetime import datetime, timedelta
+import pytz
+
 
 
 class DBConnector:
@@ -10,6 +12,7 @@ class DBConnector:
         self.patients_medical_data = self.load_patients_medical_data()
         self.patients_personal_data, self.id2name_map, self.name2id_map = self.load_patients_personal_data()
         self.loinc_data, self.test2loincmap = self.load_loinc_data()
+        self.local_tz = pytz.timezone('Asia/Jerusalem')
 
         # Create patients dictionary for easier retrival
         self.patients_dict = {}
@@ -177,8 +180,8 @@ class DBConnector:
     def update_patient_data(self, patient_name, update_date, update_time, update_val,
                             target_key, target_date, target_time, mode='update'):
         # retrieve required measurment:
-        current_date = datetime.now().strftime("%d.%m.%Y")
-        current_time = datetime.now().strftime("%H:%M")
+        current_date = datetime.now(self.local_tz).strftime("%d.%m.%Y")
+        current_time = datetime.now(self.local_tz).strftime("%H:%M")
         logs = self.retrieve_patient_data(patient_name=patient_name,
                                           target_key=target_key,
                                           target_date=target_date,
