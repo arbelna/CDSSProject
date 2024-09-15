@@ -6,7 +6,6 @@ import plotly.graph_objects as go
 import random
 import pytz
 
-
 # Load data
 dss = DSSEngine()
 patients_df = dss.db_con.patients_personal_data    #pd.read_csv('patients.csv')
