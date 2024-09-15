@@ -4,14 +4,16 @@ from datetime import datetime, time
 from DssEngine import DSSEngine
 import plotly.graph_objects as go
 import random
-from streamlit_javascript import st_javascript
+from zoneinfo import ZoneInfo
 
-timezone = st_javascript("""
-    await (async () => {
-        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        return userTimezone;
-    })().then(returnValue => returnValue)
-""")
+# Get current UTC time
+utc_time = datetime.utcnow()
+
+# Define your local timezone (example: 'Asia/Jerusalem')
+local_tz = ZoneInfo('Asia/Jerusalem')
+
+# Convert UTC time to local time
+local_time = utc_time.replace(tzinfo=ZoneInfo('UTC')).astimezone(local_tz)
 
 
 # Load data
