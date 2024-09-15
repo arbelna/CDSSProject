@@ -227,6 +227,7 @@ elif function_choice == "Update Test Value":
             st.table(result)
         else:
             st.write(result)
+    st.cache_data.clear()
 
 elif function_choice == "Delete Test Value":
     st.header("Delete Test Value")
@@ -267,6 +268,7 @@ elif function_choice == "Delete Test Value":
             st.table(result)
         else:
             st.write(result)
+    st.cache_data.clear()
 
 elif function_choice == "Get Patients States":
     st.header("Get Patients States")
