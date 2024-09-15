@@ -105,16 +105,13 @@ if function_choice == "Get Test Value":
         else:
             test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
             test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
-    default_date = datetime.now(timezone).date()
-    value_date = st.date_input('Value Date', value=default_date).strftime("%d.%m.%Y")
+    value_date = st.date_input('Value Date', value='now').strftime("%d.%m.%Y")
     value_time = st.time_input('Value Time', value=None)
     if value_time:
         value_time = value_time.strftime("%H:%M")
 
-    default_date = datetime.now(timezone).date()
-    query_date = st.date_input('Query Date', value=default_date).strftime("%d.%m.%Y")
-    default_time = datetime.now(timezone).time()
-    query_time = st.time_input('Query Time', value=default_time)
+    query_date = st.date_input('Query Date', value='now').strftime("%d.%m.%Y")
+    query_time = st.time_input('Query Time', value='now')
     if query_time:
         query_time = query_time.strftime("%H:%M")
 
@@ -157,13 +154,12 @@ elif function_choice == "Get Test History":
         else:
             test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
             test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
-    default_date = datetime.now(timezone).date()
-    start_date = st.date_input('Start Date', value=default_date).strftime("%d.%m.%Y")
+    start_date = st.date_input('Start Date', value='now').strftime("%d.%m.%Y")
     start_time = st.time_input('Start Time', value=None)
     if start_time:
         start_time = start_time.strftime("%H:%M")
 
-    end_date = st.date_input('End Date', value=default_date).strftime("%d.%m.%Y")
+    end_date = st.date_input('End Date', value='now').strftime("%d.%m.%Y")
     end_time = st.time_input('End Time', value=None)
     if end_time:
         end_time = end_time.strftime("%H:%M")
@@ -206,15 +202,13 @@ elif function_choice == "Update Test Value":
         else:
             test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
             test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
-    default_date = datetime.now(timezone).date()
-    measure_date = st.date_input('Measurement Date', value=default_date).strftime("%d.%m.%Y")
+    measure_date = st.date_input('Measurement Date', value='now').strftime("%d.%m.%Y")
     measure_time = st.time_input('Measurement Time', value=None)
     if measure_time:
         measure_time = measure_time.strftime("%H:%M")
 
-    update_date = st.date_input('Update Date', value=default_date).strftime("%d.%m.%Y")
-    default_time = datetime.now(timezone).time()
-    update_time = st.time_input('Update Time', value=default_time)
+    update_date = st.date_input('Update Date', value='now').strftime("%d.%m.%Y")
+    update_time = st.time_input('Update Time', value='now')
     if update_time:
         update_time = update_time.strftime("%H:%M")
 
@@ -256,8 +250,7 @@ elif function_choice == "Delete Test Value":
         else:
             test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
             test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
-    default_date = datetime.now(timezone).date()
-    measure_date = st.date_input('Measurement Date', value=default_date).strftime("%d.%m.%Y")
+    measure_date = st.date_input('Measurement Date', value='now').strftime("%d.%m.%Y")
     measure_time = st.time_input('Measurement Time', value=None)
     if measure_time:
         measure_time = measure_time.strftime("%H:%M")
@@ -273,8 +266,7 @@ elif function_choice == "Delete Test Value":
 elif function_choice == "Get Patients States":
     st.header("Get Patients States")
 
-    default_date = datetime.now(timezone).date()
-    state_date = st.date_input('Date', value=default_date)
+    state_date = st.date_input('Date', value='now')
     state_time = st.time_input('Time', time(0, 0))
     state_datetime = datetime.combine(state_date, state_time)
 
