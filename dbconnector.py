@@ -75,6 +75,24 @@ class DBConnector:
 
         return loinc_df, test2loincmap
 
+    def save_loinc_data(self):
+        """
+        Save the updated loinc_data DataFrame back to the CSV file.
+        """
+
+        def timedelta_to_dhm_str(td):
+            days = td.days
+            hours, remainder = divmod(td.seconds, 3600)
+            minutes, _ = divmod(remainder, 60)
+            return f"{days},{hours},{minutes}"
+
+        temp_df = self.loinc_data.copy()
+        temp_df['good_before'] = temp_df['good_before'].apply(timedelta_to_dhm_str)
+        temp_df['good_after'] = temp_df['good_after'].apply(timedelta_to_dhm_str)
+
+        file_path = os.path.join(self.db_folder_path, 'loinc_data.csv')
+        temp_df.to_csv(file_path, index=False)
+
     def save_patients_medical_data(self, patients_data_path='patient_data.csv'):
         """
         Saves patients medical data back to csv

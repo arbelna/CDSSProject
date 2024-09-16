@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 from datetime import datetime, time
 from DssEngine import DSSEngine
 import plotly.graph_objects as go
 import random
 import pytz
+
 
 # Load data
 dss = DSSEngine()
@@ -73,7 +75,7 @@ def get_test_info(test_id):
 st.title('Clinical Decision Support System')
 
 # Sidebar for function selection
-function_choice = st.sidebar.radio("Select Function", ["Get Test Value", "Get Test History", "Update Test Value", "Delete Test Value", "Get Patients States", "Get State Intervals"])
+function_choice = st.sidebar.radio("Select Function", ["Get Test Value", "Get Test History", "Update Test Value", "Delete Test Value", "Get Patients States", "Get State Intervals", "Update Good Before/After"])
 
 if function_choice == "Get Test Value":
     st.header("Get Test Value")
@@ -418,6 +420,101 @@ elif function_choice == "Get State Intervals":
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.write("No intervals found for the specified patient and state.")
+
+elif function_choice == "Update Good Before/After":
+    # Convert numpy.timedelta64 to days, hours, minutes
+    def timedelta_to_dhm(td):
+        days = td.astype('timedelta64[D]').astype(int)
+        hours = (td - np.timedelta64(days, 'D')).astype('timedelta64[h]').astype(int)
+        minutes = (td - np.timedelta64(days, 'D') - np.timedelta64(hours, 'h')).astype('timedelta64[m]').astype(int)
+        return days, hours, minutes
+    st.header("Update Good Before/After")
+
+    # Password protection
+    password = st.text_input("Enter password", type="password")
+    if password:  # Only check the password if the user has entered something
+        if password != "admin":  # Replace with your actual password
+            st.error("Incorrect password. Access denied.", icon="🚨")
+        else:
+            # Test selection
+            col1, col2 = st.columns([1, 4])
+            with col1:
+                test_selection_method = st.radio("Select test by:", ["ID", "Name"])
+            with col2:
+                if test_selection_method == "ID":
+                    test_choice = st.selectbox('Select Test ID', loinc_data['id'].unique())
+                else:
+                    test_choice = st.selectbox('Select Test Name', loinc_data['name2'].unique())
+                    test_choice = loinc_data[loinc_data['name2'] == test_choice]['id'].values[0]
+
+            # Create placeholders for current values
+            current_before_placeholder = st.empty()
+            current_after_placeholder = st.empty()
+
+
+            def display_current_values():
+                current_good_before = \
+                dss.db_con.loinc_data[dss.db_con.loinc_data['id'] == test_choice]['good_before'].values[0]
+                current_good_after = \
+                dss.db_con.loinc_data[dss.db_con.loinc_data['id'] == test_choice]['good_after'].values[0]
+
+                good_before_days, good_before_hours, good_before_minutes = timedelta_to_dhm(current_good_before)
+                good_after_days, good_after_hours, good_after_minutes = timedelta_to_dhm(current_good_after)
+
+                current_before_placeholder.write(
+                    f"Current Good Before: {good_before_days} days, {good_before_hours} hours, {good_before_minutes} minutes")
+                current_after_placeholder.write(
+                    f"Current Good After: {good_after_days} days, {good_after_hours} hours, {good_after_minutes} minutes")
+
+                return good_before_days, good_before_hours, good_before_minutes, good_after_days, good_after_hours, good_after_minutes
+
+
+            # Display initial values
+            good_before_days, good_before_hours, good_before_minutes, good_after_days, good_after_hours, good_after_minutes = display_current_values()
+
+            # Input for new values
+            st.subheader("Update Good Before")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                new_good_before_days = st.number_input("Days", min_value=0, value=good_before_days)
+            with col2:
+                new_good_before_hours = st.number_input("Hours", min_value=0, max_value=23, value=good_before_hours)
+            with col3:
+                new_good_before_minutes = st.number_input("Minutes", min_value=0, max_value=59,
+                                                          value=good_before_minutes)
+
+            st.subheader("Update Good After")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                new_good_after_days = st.number_input("Days ", min_value=0, value=good_after_days)
+            with col2:
+                new_good_after_hours = st.number_input("Hours ", min_value=0, max_value=23, value=good_after_hours)
+            with col3:
+                new_good_after_minutes = st.number_input("Minutes ", min_value=0, max_value=59,
+                                                         value=good_after_minutes)
+
+            if st.button('Update Good Before/After'):
+                # Convert input to numpy.timedelta64
+                new_good_before = np.timedelta64(new_good_before_days, 'D') + np.timedelta64(new_good_before_hours,
+                                                                                             'h') + np.timedelta64(
+                    new_good_before_minutes, 'm')
+                new_good_after = np.timedelta64(new_good_after_days, 'D') + np.timedelta64(new_good_after_hours,
+                                                                                           'h') + np.timedelta64(
+                    new_good_after_minutes, 'm')
+
+                # Update the loinc_data DataFrame
+                dss.db_con.loinc_data.loc[dss.db_con.loinc_data['id'] == test_choice, 'good_before'] = new_good_before
+                dss.db_con.loinc_data.loc[dss.db_con.loinc_data['id'] == test_choice, 'good_after'] = new_good_after
+
+                # Save the updated DataFrame back to the data source
+                dss.db_con.save_loinc_data()
+
+                # Update the displayed values
+                display_current_values()
+
+                st.success("Good Before/After values updated successfully!", icon="✅")
+    else:
+        st.info("Please enter the password to access this function.", icon="🔑")
 
 
 
